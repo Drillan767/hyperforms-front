@@ -23,14 +23,19 @@
 
 <script>
 import VueCookie from '../extra/VueCookie'
-// import _ from 'underscore'
-// import marked from 'marked'
 export default {
   name: 'Admin',
   data () {
     return {
       settings: {
-        // ...
+        soundcloud: '',
+        youtube: '',
+        spotify: '',
+        songkick: '',
+        landing_bg: '',
+        shop_bg: '',
+        contact_bg: '',
+        bio_bg: ''
       },
       musics: {
         // ...

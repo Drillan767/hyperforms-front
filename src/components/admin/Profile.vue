@@ -22,8 +22,8 @@
             <label class="custom-file-label" for="picture">Choose file</label>
           </div>
         </div>
-        <div class="preview col-md-8 offset-md-2" v-if="preview">
-          <img :src="preview" />
+        <div class="preview col-md-8 offset-md-2" v-if="preview || user.picture">
+          <img :src="preview || user.picture" />
           <br />
           <button class="btn btn-outline-danger" @click.prevent="removeImage">Remove image</button>
         </div>
