@@ -1,0 +1,21 @@
+.ok, .warning, .error {
+  width: 100%;
+  color: #fff;
+  margin-bottom: 20px;
+
+  p, li {
+    padding: 14px;
+  }
+}
+
+.ok {
+  background: #003a00;
+}
+
+.warning {
+  background: #807c00;
+}
+
+.error {
+  background: #c10012;
+}

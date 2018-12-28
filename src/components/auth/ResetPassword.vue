@@ -1,6 +1,6 @@
 <template>
-  <div id="app">
-    <router-view/>
+  <div class="reset">
+    <h1>Reset Password</h1>
   </div>
 </template>
 

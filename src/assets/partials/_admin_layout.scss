@@ -1,0 +1,35 @@
+.admin-layout {
+  .nav {
+    justify-content: center;
+  }
+
+  .profile, .settings, .newsletter, .musics {
+    width: 100%;
+  }
+
+  .profile {
+    display: flex;
+    justify-content: center;
+
+    form {
+      width: 50vw;
+      padding-top: 30px;
+      margin-bottom: 50px;
+
+      .form-group, .input-group {
+        margin-bottom: 20px;
+      }
+
+      .preview {
+        text-align: center;
+
+        img {
+          max-height: 300px;
+        }
+        button {
+          margin-top: 20px;
+        }
+      }
+    }
+  }
+}

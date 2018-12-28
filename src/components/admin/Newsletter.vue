@@ -1,6 +1,6 @@
 <template>
-  <div id="app">
-    <router-view/>
+  <div class="newsletter">
+    <h1>Newsletter</h1>
   </div>
 </template>
 
