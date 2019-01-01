@@ -59,7 +59,7 @@ export default {
         VueCookie.set('token', response.data.token)
         VueCookie.set('refresh_token', response.data.refreshToken)
       })
-      .catch(e => {
+      .catch(() => {
         VueCookie.delete('refresh_token')
         VueCookie.delete('token')
         this.$router.replace('/login?denied=1')
@@ -70,6 +70,14 @@ export default {
     this.$axios.get('/user')
       .then(response => {
         this.user = response.data
+      })
+      .catch(e => {
+        console.log(e.response)
+      })
+    this.$axios.get('/settings')
+      .then(response => {
+        console.log(response)
+        this.settings = response.data
       })
       .catch(e => {
         console.log(e.response)

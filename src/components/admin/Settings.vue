@@ -3,7 +3,7 @@
     <form @submit.prevent="submit">
       <div class="row">
         <div class="ok" v-if="success">
-          <p>Profile informations saved successfully.</p>
+          <p>Settings saved successfully.</p>
         </div>
         <div class="error" v-if="errors.length > 0">
           <ul>
@@ -121,6 +121,18 @@ export default {
       formData.append('bio_bg', document.getElementById('bio_bg').files[0])
       formData.append('shop_bg', document.getElementById('shop_bg').files[0])
       formData.append('contact_bg', document.getElementById('contact_bg').files[0])
+
+      this.$axios.post('/settings', formData, {
+        headers: {
+          'Authorization': `Bearer ${VueCookie.get('token')}`
+        }
+      })
+        .then(() => {
+          this.success = true
+        })
+        .catch(e => {
+          console.log(e.response.data)
+        })
     }
   }
 }
