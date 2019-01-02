@@ -76,7 +76,6 @@ export default {
       })
     this.$axios.get('/settings')
       .then(response => {
-        console.log(response)
         this.settings = response.data
       })
       .catch(e => {

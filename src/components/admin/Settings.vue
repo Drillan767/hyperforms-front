@@ -32,7 +32,7 @@
           <div class="preview" v-if="landing_bg || settings.landing_bg">
             <img :src="landing_bg || settings.landing_bg">
             <br />
-            <button class="btn btn-outline-danger" @click.prevent="removeImage">Remove image</button>
+            <button class="btn btn-outline-danger" @click.prevent="removeImage('landing_bg')">Remove image</button>
           </div>
           <div class="custom-file">
             <input type="file" class="custom-file-input" id="landing_bg" aria-describedby="landing_bg" @change="upload('landing_bg', $event)">
@@ -43,7 +43,7 @@
           <div class="preview" v-if="bio_bg || settings.bio_bg">
             <img :src="bio_bg || settings.bio_bg">
             <br />
-            <button class="btn btn-outline-danger" @click.prevent="removeImage">Remove image</button>
+            <button class="btn btn-outline-danger" @click.prevent="removeImage('bio_bg')">Remove image</button>
           </div>
           <div class="custom-file">
             <input type="file" class="custom-file-input" id="bio_bg" aria-describedby="bio_bg" @change="upload('bio_bg', $event)">
@@ -54,7 +54,7 @@
           <div class="preview" v-if="shop_bg || settings.shop_bg">
             <img :src="shop_bg || settings.shop_bg">
             <br />
-            <button class="btn btn-outline-danger" @click.prevent="removeImage">Remove image</button>
+            <button class="btn btn-outline-danger" @click.prevent="removeImage('shop_bg')">Remove image</button>
           </div>
           <div class="custom-file">
             <input type="file" class="custom-file-input" id="shop_bg" aria-describedby="shop_bg" @change="upload('shop_bg', $event)">
@@ -65,7 +65,7 @@
           <div class="preview" v-if="contact_bg || settings.contact_bg">
             <img :src="contact_bg || settings.contact_bg">
             <br />
-            <button class="btn btn-outline-danger" @click.prevent="removeImage">Remove image</button>
+            <button class="btn btn-outline-danger" @click.prevent="removeImage('contact_bg')">Remove image</button>
           </div>
           <div class="custom-file">
             <input type="file" class="custom-file-input" id="contact_bg" aria-describedby="contact_bg" @change="upload('contact_bg', $event)">
