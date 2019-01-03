@@ -1,91 +1,124 @@
 <template>
   <div class="newsletter">
     <div class="row">
-      <div class="col-3">
+      <div class="col-2">
         <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
           <a
             class="nav-link active"
-            id="v-pills-settings-tab"
+            id="v-pills-home-tab"
             data-toggle="pill"
-            href="#v-pills-settings"
+            href="#v-pills-home"
             role="tab"
-            aria-controls="v-pills-settings"
+            aria-controls="v-pills-home"
             aria-selected="true">
-            Settings
+            All newsletters
           </a>
           <a
             class="nav-link"
-            id="v-pills-newsletter-tab"
+            id="v-pills-profile-tab"
             data-toggle="pill"
             href="#v-pills-profile"
             role="tab"
             aria-controls="v-pills-profile"
             aria-selected="false">
-            Profile
+            New newsletter
+          </a>
+          <a
+            class="nav-link"
+            id="v-pills-messages-tab"
+            data-toggle="pill"
+            href="#v-pills-messages"
+            role="tab"
+            aria-controls="v-pills-messages"
+            aria-selected="false">
+            Subscribers list <span class="badge badge-light">{{ subscribers.length }}</span>
           </a>
         </div>
       </div>
-      <div class="col-7">
+      <!--All newsletters-->
+      <div class="col-8 offset-1">
         <div class="tab-content" id="v-pills-tabContent">
-          <div class="tab-pane fade show active" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">
-            <div class="ok" v-if="success">
-              <p>Template successfully saved</p>
-            </div>
-            <div class="text-right">
-              <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#newTemplate">
-                <i class="fas fa-plus"></i>
-                New template
-              </button>
-            </div>
+          <div
+            class="tab-pane fade show active"
+            id="v-pills-home"
+            role="tabpanel"
+            aria-labelledby="v-pills-home-tab">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Status</th>
+                  <th>Created at</th>
+                  <th>Updated at</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr></tr>
+              </tbody>
+            </table>
           </div>
-          <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">...</div>
-        </div>
-      </div>
-    </div>
+          <!--New Newsletter-->
+          <div
+            class="tab-pane fade"
+            id="v-pills-profile"
+            role="tabpanel"
+            aria-labelledby="v-pills-profile-tab">
+            <form @submit.prevent="new_nl" class="row">
+              <div class="form-group col-md-8 offset-md-2">
+                <label for="title">Title</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="title"
+                  v-model="newsletter.title"
+                  placeholder="Newsletter's title"
+                  required>
+              </div>
+              <div class="form-group col-md-8 offset-md-2">
+                <label>Content</label>
+                <markdown-editor v-model="newsletter.content" ref="markdownEditor" />
+                <label>Insert an image for the content</label>
+                <div class="custom-file">
+                  <input type="file" class="custom-file-input" id="nl_upload" @change="upload">
+                  <label class="custom-file-label" for="nl_upload">Choose file</label>
+                </div>
 
-    <div class="modal fade" id="newTemplate" tabindex="-1" role="dialog" aria-labelledby="newTemplateLabel" aria-hidden="true">
-      <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="newTemplateLabel">New template</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <form @submit.prevent="nl_submit">
-            <div class="modal-body">
-              <div class="row">
-                <div class="form-group col-md-8 offset-md-2 row">
-                  <label for="title" class="col-md-2">Title</label>
-                  <div class="col-md-8">
-                    <input class="form-control" id="title" type="text" v-model="nl_settings.title" required>
-                  </div>
-                </div>
-                <div class="form-group col-md-8 offset-md-2 row">
-                  <label for="template" class="col-md-2">Template</label>
-                  <div class="col-md-8">
-                    <textarea class="form-control" id="template" rows="6" v-model="nl_settings.template" required></textarea>
-                  </div>
-                </div>
-                <div class="form-group col-md-8 offset-md-2 row">
-                  <label for="bottom_text" class="col-md-2">Bottom text</label>
-                  <div class="col-md-8">
-                    <input class="form-control" id="bottom_text" type="text" v-model="nl_settings.bottom_text" required>
-                  </div>
-                </div>
-                <div class="form-group col-md-8 offset-md-2 row">
-                  <label for="unsubscribe" class="col-md-2">Unsubscribe</label>
-                  <div class="col-md-8">
-                    <input class="form-control" id="unsubscribe" type="text" v-model="nl_settings.unsubscribe" required>
-                  </div>
+                <div class="uploaded">
+                  <button
+                    class="btn btn-secondary copy"
+                    v-for="(image, index) in images"
+                    :key="index"
+                    :data-title="tooltip"
+                    @click.prevent="copy(image)"
+                  >
+                    {{ image.split(/[\\/]/).pop() }}
+                  </button>
                 </div>
               </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="submit" class="btn btn-primary">Save</button>
-            </div>
-          </form>
+              <div class="form-group text-center col-md-12">
+                <button class="btn btn-secondary" type="submit">
+                  <i class="fas fa-save"> Save</i>
+                </button>
+              </div>
+            </form>
+          </div>
+          <div
+            class="tab-pane fade"
+            id="v-pills-messages"
+            role="tabpanel"
+            aria-labelledby="v-pills-messages-tab">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Email address</th>
+                  <th>Status</th>
+                  <th>Subscription date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -94,37 +127,49 @@
 
 <script>
 import VueCookie from '../extra/VueCookie'
-import $ from 'jquery'
+import markdownEditor from 'vue-simplemde/src/markdown-editor'
+import 'simplemde/dist/simplemde.min.css'
+
 export default {
   name: 'Newsletter',
   props: ['user', 'settings'],
+  components: { markdownEditor },
   data () {
     return {
-      nl_settings: {
+      newsletter: {
         title: '',
-        template: '',
-        bottom_text: '',
-        unsubscribe: ''
-      },
-      newsletters: {
         content: '',
-        status: false,
-        nl_settings: 0
+        status: false
       },
-      templates: [],
+      tooltip: 'Click to copy',
+      images: [],
+      newsletters: [],
+      subscribers: [],
       errors: [],
       success: false
     }
   },
 
   mounted () {
-    this.$axios.get('/newsletter/settings', {
+    this.$axios.get('/newsletters', {
       headers: {
         'Authorization': `Bearer ${VueCookie.get('token')}`
       }
     })
       .then(response => {
-        console.log(response)
+        this.newsletters = response.data
+      })
+      .catch(e => {
+        console.log(e.response)
+      })
+
+    this.$axios.get('/subscribers', {
+      headers: {
+        'Authorization': `Bearer ${VueCookie.get('token')}`
+      }
+    })
+      .then(response => {
+        this.subscribers = response.data
       })
       .catch(e => {
         console.log(e.response)
@@ -132,31 +177,41 @@ export default {
   },
 
   methods: {
-    nl_submit () {
-      this.errors = []
-      let fields = ['title', 'template', 'bottom_text', 'unsubscribe']
-      fields.map(field => {
-        if (this.settings[field] === '') {
-          this.errors.push({ message: `field ${field} is empty` })
+    new_nl () {
+      this.newsletter.images = this.images
+      this.$axios.post('/newsletter/store', this.newsletter, {
+        headers: {
+          'Authorization': `Bearer ${VueCookie.get('token')}`
         }
       })
-
-      if (!this.settings.unsubscribe.includes('[unsub_link]')) {
-        this.errors.push({ message: "The 'unsubscribe' message needs to contain '[unsub_link]'" })
-      }
-
-      if (this.errors.length === 0) {
-        this.$axios.post('/newsletter/settings', this.settings, {
-          headers: {
-            'Authorization': `Bearer ${VueCookie.get('token')}`
-          }
+        .then(() => {
+          this.success = true
         })
-          .then(response => {
-            console.log(response.data)
-            this.success = true
-            $('#newTemplate').modal('hide')
-          })
-      }
+    },
+
+    upload () {
+      let formdata = new FormData()
+      formdata.append('image', document.getElementById('nl_upload').files[0])
+      this.$axios.post('/newsletter/upload', formdata, {
+        headers: {
+          'Authorization': `Bearer ${VueCookie.get('token')}`
+        }
+      })
+        .then(response => {
+          this.images.push(response.data)
+        })
+        .catch(e => {
+          console.log(e.response)
+        })
+    },
+
+    copy (image) {
+      const basename = image.split(/[\\/]/).pop()
+      navigator.clipboard.writeText(`![${basename}](${image.replace(/ /g, '%20')})`)
+        .catch((e) => {
+          console.log(e)
+        })
+      this.tooltip = 'Copied!'
     }
   }
 }
