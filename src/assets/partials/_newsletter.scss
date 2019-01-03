@@ -1,6 +1,18 @@
 .newsletter {
   padding-top: 30px;
 
+  .nl-list {
+    tbody tr td:last-child .actions {
+      width: 100%;
+      display: flex;
+      justify-content: space-evenly;
+      
+      i {
+        cursor: pointer;
+      }
+    }
+  }
+
   .copy {
     position: relative;
 

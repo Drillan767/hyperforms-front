@@ -2,7 +2,7 @@ import swal from 'sweetalert2'
 import 'sweetalert2/src/sweetalert2.scss'
 import VueCookie from './VueCookie'
 import axios from 'axios'
-import Router from '../router'
+import Router from './router'
 
 const API = axios.create({
   baseURL: 'http://localhost:3333/api/v1'
@@ -44,12 +44,42 @@ const SweetAlert = {
     return res
   },
 
-  confirm (title, text) {
-    swal({
-      type: 'success',
+  confirm (title, text, type, confirmation, url, redirect = null) {
+    let res = swal({
       title: title,
-      text: text
+      text: text,
+      type: type,
+      showCancelButton: true,
+      showLoaderOnConfirm: true,
+      confirmButtonText: 'Confirm',
+      preConfirm: () => {
+        return API.post(url, {}, {
+          headers: {
+            'Authorization': `Bearer ${VueCookie.get('token')}`
+          }
+        })
+          .then(response => {
+            return response
+          })
+          .catch(e => {
+            console.log(e)
+          })
+      },
+      allowOutsideClick: () => !swal.isLoading()
     })
+    res.then((result) => {
+      if (result.value) {
+        swal({
+          type: 'success',
+          title: confirmation
+        })
+        if (redirect) {
+          Router.push(redirect)
+        }
+        return result.value
+      }
+    })
+    return res
   }
 }
 

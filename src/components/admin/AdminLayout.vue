@@ -18,6 +18,7 @@
     <transition :name="transitionName">
       <router-view :settings="settings" :user="user" :musics="musics"></router-view>
     </transition>
+    <hr />
   </div>
 </template>
 

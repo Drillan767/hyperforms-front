@@ -1,5 +1,13 @@
 <template>
   <div class="newsletter">
+    <div class="ok" v-if="success">
+      <p>{{ success_message }}</p>
+    </div>
+    <div class="error" v-if="errors.length > 0">
+      <ul>
+        <li v-for="(error, index) in errors" :key="index">{{ error.message }}</li>
+      </ul>
+    </div>
     <div class="row">
       <div class="col-2">
         <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
@@ -43,7 +51,7 @@
             id="v-pills-home"
             role="tabpanel"
             aria-labelledby="v-pills-home-tab">
-            <table class="table table-bordered">
+            <table class="table table-bordered nl-list">
               <thead>
                 <tr>
                   <th>Title</th>
@@ -54,7 +62,19 @@
                 </tr>
               </thead>
               <tbody>
-                <tr></tr>
+                <tr v-for="(nl, index) in newsletters" :key="index">
+                  <td>{{ nl.title }}</td>
+                  <td :class="[nl.status ? 'text-success': 'text-warning']">{{ nl.status ? 'Sent' : 'Pending' }}</td>
+                  <td>{{ dateFormat(nl.created_at) }}</td>
+                  <td>{{ dateFormat(nl.updated_at) }}</td>
+                  <td>
+                    <div class="actions">
+                      <i class="fas fa-search" @click="detail(nl)"></i>
+                      <i class="fas fa-edit" @click="edit(nl)"></i>
+                      <i class="fas fa-times" @click="del(nl)"></i>
+                    </div>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -122,12 +142,57 @@
         </div>
       </div>
     </div>
+    <!--Modal for viewing / publishing newsletters-->
+    <div class="modal fade" id="showNL" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">{{ newsletter.title }}</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" v-html="newsletter.content"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" @click="publish(newsletter)" v-if="!newsletter.status" class="btn btn-success">
+              <i class="fas fa-paper-plane"></i>
+              Publish
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--Modal for editing / deleting newsletters-->
+    <div class="modal fade" id="editNL" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">{{ newsletter.title }}</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form @submit.prevent=""></form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import VueCookie from '../extra/VueCookie'
 import markdownEditor from 'vue-simplemde/src/markdown-editor'
+import SweetAlert from '../extra/SweetAlert2'
+import moment from 'moment'
+import $ from 'jquery'
+import marked from 'marked'
 import 'simplemde/dist/simplemde.min.css'
 
 export default {
@@ -146,7 +211,8 @@ export default {
       newsletters: [],
       subscribers: [],
       errors: [],
-      success: false
+      success: false,
+      success_message: ''
     }
   },
 
@@ -160,7 +226,7 @@ export default {
         this.newsletters = response.data
       })
       .catch(e => {
-        console.log(e.response)
+        this.errors.concat(e.response.data)
       })
 
     this.$axios.get('/subscribers', {
@@ -172,20 +238,26 @@ export default {
         this.subscribers = response.data
       })
       .catch(e => {
-        console.log(e.response)
+        this.errors.concat(e.response.data)
       })
   },
 
   methods: {
     new_nl () {
+      this.errors = []
       this.newsletter.images = this.images
       this.$axios.post('/newsletter/store', this.newsletter, {
         headers: {
           'Authorization': `Bearer ${VueCookie.get('token')}`
         }
       })
-        .then(() => {
+        .then(response => {
+          console.log(response)
+          this.newsletters.push(response.data)
           this.success = true
+        })
+        .catch(e => {
+          this.errors = e.response.data
         })
     },
 
@@ -201,7 +273,7 @@ export default {
           this.images.push(response.data)
         })
         .catch(e => {
-          console.log(e.response)
+          this.errors.concat(e.response.data)
         })
     },
 
@@ -212,6 +284,41 @@ export default {
           console.log(e)
         })
       this.tooltip = 'Copied!'
+    },
+
+    dateFormat (date) {
+      return moment(date).format('DD/MM/YYYY')
+    },
+
+    detail (nl) {
+      this.newsletter = nl
+      this.newsletter.content = marked(this.newsletter.content, { sanitize: true })
+      $('#showNL').modal()
+    },
+
+    edit (nl) {
+      this.newsletter = nl
+      $('#editNL').modal()
+    },
+
+    update () {
+      // ...
+    },
+
+    del (nl) {
+      // ...
+    },
+
+    publish (nl) {
+      $('#showNL').modal('hide')
+      console.log(nl)
+      SweetAlert.confirm(
+        `Publish "${nl.title}"?`,
+        "You won't be able to unpublish it, as all the mails will be sent",
+        'warning',
+        'The newsletter is now published',
+        `/newsletter/publish/${nl.id}`
+      )
     }
   }
 }
